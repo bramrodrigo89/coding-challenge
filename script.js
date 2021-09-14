@@ -1,11 +1,26 @@
-var request = new XMLHttpRequest();  
-request.open("GET", '/products.csv', false);   
+// Parse csv files into arrays
+
+var request = new xmlhttprequest();  
+request.open("GET", '/usage.csv', false);   
 request.send(null);  
 
-var products = new Array();
+var consumptions = new Array();
 var jsonObject = request.responseText.split(/\r?\n|\r/);
 for (var i = 0; i < jsonObject.length; i++) {
-  products.push(jsonObject[i].split(','));
+    consumptions.push(jsonObject[i].split(','));
 }
-// Retrived data from csv file content
-console.log(products);
+
+// Summing up consumption values in consumptions array
+var totals = [];
+consumptions.reduce(function(res, value) {
+  if (!res[value.name]) {
+    res[value.name] = { Id: value.name, qty: 0 };
+    totals.push(res[value.name])
+  }
+  res[value.name].qty += value.qty;
+  return res;
+}, {});
+
+// Sorting data from highest to lowest
+
+totals.sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
